@@ -1,0 +1,11 @@
+[window]
+width = 1300
+height = 720
+aspect_ratio = 1.8333333333333333333e0
+fullscreen = false
+resizable = true
+
+[game]
+fps = 60
+starting_disc = 3
+max_disc = 10

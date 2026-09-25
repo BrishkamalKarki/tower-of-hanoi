@@ -1,0 +1,10 @@
+[project]
+
+name = "tower-of-hanoi"
+version = "0.1.0"
+description = "A tower of Hanoi game built in python with pygame"
+
+requires-python = ">=3.12"
+dependencies = [
+    "pygame<=2.6.2" 
+  ]
