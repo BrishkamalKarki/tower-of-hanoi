@@ -14,6 +14,7 @@ class Game:
     self.game_scene = ToHScene.Scene(self.game_state, self.screen) 
     self.game_event = events.EventSession(self.game_state, self.game_scene) 
     self.solver = solver.Solver(self.game_state) 
+    pygame.display.set_caption("Tower Of Hanoi")
 
     self.solver_thread = threading.Thread(target=self.solver.startThinking)
 
