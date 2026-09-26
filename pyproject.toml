@@ -6,5 +6,5 @@ description = "A tower of Hanoi game built in python with pygame"
 
 requires-python = ">=3.12"
 dependencies = [
-    "pygame<=2.6.2" 
+    "pygame-ce<=2.5.8" 
   ]

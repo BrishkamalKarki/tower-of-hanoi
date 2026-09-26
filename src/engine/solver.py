@@ -1,114 +1,73 @@
 import gameState
 import copy
 import sys
+from collections import deque
 
 class Solver:
 
   def __init__(self, game_state):
     self.game_state: gameState.gameState = game_state
-    sys.setrecursionlimit(100000)
+    # sys.setrecursionlimit(100000)
 
   def startThinking(self):
-    self.virtual_hanoi_board = copy.deepcopy(self.game_state.HANOI_BOARD)
-
-    self.possible_move_way = []
-
-    self.valid_moves = [()]
+    virtual_hanoi_board = (tuple(i for i in range(1, self.game_state.DISC_NO+1)), (), ())
+    solve_hanoi_board = ((), (), tuple(i for i in range(1, self.game_state.DISC_NO+1)))
     self.curr_move = 0
-    self.done_for = 0
-    self.min_moves = float('inf')
 
     self.local_solved = False
-
-    self.visited = []
-
-    for disc in range(1, self.game_state.MAX_DISC):
-      self.solve(0)
-      print("the min move is : ", self.min_moves)
-      # self.done_for += 1
-      # print("the curr move is ", self.curr_move)
+    self.move_sequence = self.bfs(virtual_hanoi_board, solve_hanoi_board)
+    self.game_state.MIN_MOVES = len(self.move_sequence)
     self.game_state.SOLVED = True
+    self.game_state.MOVE_SEQ.clear()
+    self.game_state.MOVE_SEQ = self.move_sequence[:]
+    self.game_state.GAME_STATE_CHANGED = True
+    self.game_state.BOT_THINKED = True
 
-  def solve(self, move) -> bool:
-    if move >= self.min_moves:
-      return False
-    A = self.virtual_hanoi_board['A'][:]
-    B = self.virtual_hanoi_board['B'][:]
-    C = self.virtual_hanoi_board['C'][:]
-    # print(A, B, C)
-    local_hanoi_board = {'A': A, 'B': B, 'C': C}
+  def checkValidMoves(self, local_hanoi_board) -> tuple:
+    valid_moves = ()
 
-    if not self.saveBoard(local_hanoi_board, move):
-      return False
+    src = 0
+    des = 0
+    for peg in local_hanoi_board:
+      if peg: 
+        last_of_peg = peg[-1]
 
+        for peg in local_hanoi_board:
+          if peg:
+            if peg[-1] < last_of_peg:
+              valid_moves += ((src, des),)
+          else:
+            valid_moves += ((src, des),)
+          des += 1
+      src += 1
+      des = 0
 
-    # print("current board ",self.checkSolved(local_hanoi_board), local_hanoi_board)
-    if self.checkGotOne(local_hanoi_board):
-      # print("the move is ", move)
-      self.min_moves = move
-      return True
-
-    valid_moves = self.checkValidMoves(local_hanoi_board)
-
-    for valid_move in valid_moves:
-      # print("the virtual hanoi board after the valid move is", self.virtual_hanoi_board[valid_move[0]], "for valid move ", valid_move, " at move ", move)
-      self.virtual_hanoi_board[valid_move[1]].append(self.virtual_hanoi_board[valid_move[0]][-1])
-      self.virtual_hanoi_board[valid_move[0]].pop()
-
-      # print("\n\nrecurse finished")
-
-      solved = self.solve(move+1)
-      self.virtual_hanoi_board = {'A': A[:], 'B': B[:], 'C': C[:]} 
-      
-      # if solved: 
-      #   return True 
-    
-    # return False
-
-  def checkValidMoves(self, local_hanoi_board) -> dict[chr, chr]:
-    valid_moves = []
-
-    for src_stick, discs in local_hanoi_board.items():
-      for des_stick, discs_ in local_hanoi_board.items():
-
-        if src_stick == des_stick:
-          continue
-
-        if len(discs) == 0:
-          continue
-
-        if len(discs_) == 0:
-          # print (src_stick, des_stick)
-          valid_moves.append((src_stick, des_stick))
-          continue
-
-        if discs[-1] > discs_[-1]:
-          valid_moves.append((src_stick, des_stick))
-
-    # print(valid_moves)
     return valid_moves
 
-  def checkGotOne(self, local_hanoi_board) -> bool:
-    curr_disc = self.done_for + 1
-    return local_hanoi_board['C'][:curr_disc] == list(range(1, curr_disc + 1))
+  def applyMove(self, local_hanoi_board, src, des):
+    local_hanoi_board = list(local_hanoi_board)
+    local_hanoi_board[des] += (local_hanoi_board[src][-1],)
+    local_hanoi_board[src] = local_hanoi_board[src][:-1]
+    return tuple(local_hanoi_board)
+
+  def bfs(self, local_haoi_board, solved_hanoi_board): # breadth first search
+    board_queue = deque([(local_haoi_board, [])]) 
+    visited = {local_haoi_board}
+
+    while board_queue:  
+      current_state, move_seq = board_queue.popleft()
+
+      if current_state == solved_hanoi_board:
+        return move_seq
+
+      possible_moves = self.checkValidMoves(current_state)
+      for pm in possible_moves:
+        new_state = self.applyMove(current_state[:], pm[0], pm[1])
+
+        if new_state not in visited:
+          new_move_seq = move_seq + [pm]
+          visited.add(new_state)
+          board_queue.append((new_state, new_move_seq))
+
+    return None
   
-  def checkSolved(self, local_hanoi_board) -> bool:
-    return local_hanoi_board['C'] == list(range(1, self.game_state.DISC_NO + 1))
-
-  def saveBoard(self, local_hanoi_board, move) -> bool:
-    if (len(local_hanoi_board) == 0): 
-      self.visited.append(local_hanoi_board)
-      return True
-
-    for state in self.visited:
-      if state[0] == local_hanoi_board:
-        if state[1] <= move:
-          return False
-        state[1] = move
-        return True
-
-    self.visited.append([local_hanoi_board, move])
-    return True
-
-
-    

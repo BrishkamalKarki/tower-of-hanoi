@@ -18,7 +18,7 @@ class gameState:
 
     self.RUNNING = True
     self.DISC_NO = self.STARTING_DISC
-    self.MIN_MOVES = -1
+    self.MIN_MOVES = 0
     self.NO_DISC_SOLVED = -1
     self.SOLVED = False
     self.GAME_STATE_CHANGED = False
@@ -28,18 +28,36 @@ class gameState:
     self.DISC_MOVED_FROM = 'n'
     self.DISC_BEING_MOVED = False
     self.MOUSE_BTN_BEING_PRESSED = False
+    self.GAME_WON = False
+    self.MOVE = 0
+    self.MOVE_SEQ = []
+    self.SOLVING_CONTENT = "UNSOLVED"
+    self.BOT_SOLVING = False
+    self.BOT_RESTART = True
+    self.BOT_THINKED = False
+    self.PREV_SRC = -1
+    self.PREV_DES = -1
+    self.SRC, self.DES = -1, -1
+    self.PEG_ALIAS = {0:'A', 1:'B', 2:'C'}
+    self.GAME_HISTOTY = []
+    self.BOT_SOLVING_SPEED = 8 # px/frame
 
   def updateState(self):
-    if (not self.USER_SOLVING):
-      # self.HANOI_BOARD = {'A':[2, 4, 5], 'B':[1, 3, 6], 'C':[9, 8, 10]}
+    if (not self.USER_SOLVING and not self.BOT_SOLVING):
       self.HANOI_BOARD = {'A': [i for i in range(1, self.DISC_NO+1)], 'B': [], 'C': []}
       self.DISC_NO_BEING_MOVED = -1
       self.DISC_MOVED_FROM = 'n'
       self.DISC_BEING_MOVED = False
       self.MOUSE_BTN_BEING_PRESSED = False
       self.RUNNING = True
-      self.MIN_MOVES = -1
       self.NO_DISC_SOLVED = -1
-      # self.SOLVED = False
       self.USER_SOLVING = False
+      self.GAME_WON = False
+      self.MOVE = 0
+      self.SOLVING_CONTENT = "UNSOLVED"
+      self.BOT_SOLVING = False
+      self.PREV_SRC = -1
+      self.PREV_DES = -1
+      self.SRC, self.DES = -1, -1
+
 

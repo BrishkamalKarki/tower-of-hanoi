@@ -4,6 +4,11 @@ class Font:
   def __init__(self):
     self.reg_font = pygame.font.Font(os.path.join("..",  "assets", "fonts", "Cinzel", "static", "Cinzel-Regular.ttf"), 28)
 
+class Sounds:
+  def __init__(self):
+    self.disc_sound = pygame.mixer.Sound(os.path.join("..",  "assets", "sounds", "disc_place.wav"))
+    self.btn_sound = pygame.mixer.Sound(os.path.join("..",  "assets", "sounds", "clicked.mp3"))
+
 class Base(pygame.sprite.Sprite):
   def __init__(self, game_state):
     super().__init__()
@@ -73,4 +78,32 @@ class Click(pygame.sprite.Sprite):
     self.game_state: gameState.gameState = game_state
     self.base_surf = pygame.transform.scale(pygame.image.load(os.path.join("..", "assets", "sprites", "click.png")), (30, 30)).convert_alpha()
     self.image = self.base_surf
+    self.rect = self.image.get_rect()
+
+class Return(pygame.sprite.Sprite):
+  def __init__(self, game_state):
+    super().__init__()
+
+    self.game_state: gameState.gameState = game_state
+    self.return_surf = pygame.transform.scale(pygame.image.load(os.path.join("..", "assets", "sprites", "undo.png")), (50, 50)).convert_alpha()
+    self.image = self.return_surf
+    self.rect = self.image.get_rect()
+
+class SpeedUp(pygame.sprite.Sprite):
+  def __init__(self, game_state):
+    super().__init__()
+
+    self.game_state: gameState.gameState = game_state
+    self.speed_up_surf = pygame.transform.scale(pygame.image.load(os.path.join("..", "assets", "sprites", "speed.png")), (50, 50)).convert_alpha()
+    self.image = self.speed_up_surf
+    self.rect = self.image.get_rect()
+
+class SpeedDown(pygame.sprite.Sprite):
+  def __init__(self, game_state):
+    super().__init__()
+
+    self.game_state: gameState.gameState = game_state
+    self.speed_down_surf = pygame.transform.scale(pygame.image.load(os.path.join("..", "assets", "sprites", "speed.png")), (50, 50)).convert_alpha()
+    self.speed_down_surf = pygame.transform.flip(self.speed_down_surf, False, True)
+    self.image = self.speed_down_surf
     self.rect = self.image.get_rect()

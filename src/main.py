@@ -24,18 +24,20 @@ class Game:
     while (self.game_state.RUNNING):
 
       # checking for the event
-      self.game_event.checkEvent()
-        
-      if self.game_state.GAME_STATE_CHANGED:
-        self.game_scene.updateContent()
+      self.game_event.checkEvent()        
 
-      if (not self.game_state.SOLVED): 
+      if (self.game_state.BOT_RESTART):
         if not self.solver_thread.is_alive():
+          self.game_state.BOT_THINKED = False
+          self.game_state.BOT_RESTART = False
           self.solver_thread.start()
-        self.game_state.SOLVED = True
+          self.solver_thread = threading.Thread(target=self.solver.startThinking)
+        
+      
 
       if (self.game_state.GAME_STATE_CHANGED):
         self.game_state.updateState()
+        self.game_scene.updateContent()
         self.game_state.GAME_STATE_CHANGED = False
 
       self.screen.fill("#b3b3b3")
